@@ -4,6 +4,7 @@ import { ModelUtil } from './utils/model.helper'
 import { Contracts } from './api/contracts';
 import { Jobs } from './api/jobs';
 import { Admin } from './api/admin';
+import { Balance } from './api/balance';
 
 
 export class App {
@@ -25,5 +26,6 @@ export class App {
         app.use(`/contracts`, new Contracts());
         app.use(`/jobs`,new Jobs());
         app.use(`/admin`,new Admin());
+        app.use(`/balance`,new Balance());
     }
 }

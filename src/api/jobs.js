@@ -41,7 +41,6 @@ export class Jobs {
         const contractJob = await Contract.findByPk(jobToPay.ContractId);
 
         if (Jobs.canProfilePayJob(profile, jobToPay, contractJob)) {
-            console.log("asdasd");
             const t = await sequelize.transaction();
 
             await Profile.update(
@@ -55,7 +54,7 @@ export class Jobs {
             const contractor = await Profile.findByPk(contractJob.ContractorId);
 
             await Profile.update(
-                { balance: (profile.balance + jobToPay.price) },
+                { balance: (profile.balance + parseFloat(jobToPay.price)) },
                 {
                     where: { id: contractor.id }
                 },
@@ -67,8 +66,8 @@ export class Jobs {
             await t.commit();
 
         } else {
-            console.log("asdasd---");
-
+            res.json("You can't pay this Job");
+            return
         }
 
         res.json(jobToPay)
@@ -85,6 +84,8 @@ export class Jobs {
             case !(profile.balance >= job.price):
                 return false;
             case (profile.id != contract.ClientId):
+                return false;
+            case (job.paid):
                 return false;
             default: return true;
         }
