@@ -22,6 +22,15 @@ export class Admin {
         res.json(result);
     }
     async bestClient(req, res) {
-
+        const sequelize = req.app.get('sequelize');
+        const { start, end, limit = 2 } = req.query;
+        const result = await sequelize.query(`
+        select a.id,a.firstName,a.lastName, sum(b.price) as total from Profiles a , 
+        Jobs b , Contracts c 
+        where c.ClientId = a.id 
+        and b.ContractId = c.id and b.paid is true and b.paymentDate between date('${start}') AND date('${end}')  
+        group by a.profession order by sum(b.price) desc limit ${limit}`, { type: QueryTypes.SELECT });
+        if (!result || !start || !end) return res.status(404).end()
+        res.json(result);
     }
 }
