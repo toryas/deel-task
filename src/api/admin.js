@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { QueryTypes } from 'sequelize';
 
 export class Admin {
     constructor() {
@@ -10,8 +11,15 @@ export class Admin {
 
     async bestProfesion(req, res) {
         const sequelize = req.app.get('sequelize');
-        const [result,metadata] = await sequelize.query(`select a.profession, sum(b.price),b.paid from Profiles a , Jobs b , Contracts c where c.ContractorId = a.id and b.ContractId = c.id and b.paid is true and b.paymentDate between date('2000-01-01') AND date('2022-12-31')  group by a.profession`); 
-        return result;
+        const { start, end } = req.query;
+        const result = await sequelize.query(`
+        select a.profession, sum(b.price) as total from Profiles a , 
+        Jobs b , Contracts c 
+        where c.ContractorId = a.id 
+        and b.ContractId = c.id and b.paid is true and b.paymentDate between date('${start}') AND date('${end}')  
+        group by a.profession order by sum(b.price) desc`, { type: QueryTypes.SELECT });
+        if (!result || !start || !end) return res.status(404).end()
+        res.json(result);
     }
     async bestClient(req, res) {
 
