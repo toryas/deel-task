@@ -2,6 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { ModelUtil } from './utils/model.helper'
 import { Contracts } from './api/contracts';
+import { Jobs } from './api/jobs';
+import { Admin } from './api/admin';
 
 
 export class App {
@@ -21,5 +23,7 @@ export class App {
 
     loadApis(app) {
         app.use(`/contracts`, new Contracts());
+        app.use(`/jobs`,new Jobs());
+        app.use(`/admin`,new Admin());
     }
 }
